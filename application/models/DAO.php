@@ -142,12 +142,12 @@ class DAO extends CI_Model{
 					if($usuario->passUser == $password){
 						switch($usuario->typeUser){
 							case 'Admin': 
-							$this->db->where('users',$usuario->idUser);
+						    //$this->db->where('namePerson',$usuario->namePerson);
 							$query = $this->db->get('admin_view');
 							$response = array(
 								"status"=>"success",
 								"message"=>"Informacion Cargada",
-								 "data"=>$query
+								 "data"=>$query->row()
 							);
 							break;
 
