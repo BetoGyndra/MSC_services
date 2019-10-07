@@ -133,7 +133,8 @@ class DAO extends CI_Model{
 			$response = array(
 				"status"=>"error",
 				"message"=> "error interno, intenta nuevamente"
-			);			
+			);		
+				
 		}else{
 			$usuario = $query->row();
 			if($usuario){
