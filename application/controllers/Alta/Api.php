@@ -45,6 +45,26 @@ class Api extends REST_Controller {
       $this->response($response,$response['status_code']);
     }
 
+    
+    function altaV_get(){
+      
+      $id = $this->get('id');
+      if (count($this->get())>1) {
+        $response = array(
+          "status"=>"error", 
+                "status_code"=>409, 
+                "message"=>"Too Many Params Recived",
+                "validations"=>array('id'=>"Send Id To Get An person"), 
+                "data"=>NULL
+        );
+      }else if ($id) {
+        $response = $this->DAO->selectEntity('altaview',array('idPerson'=>$id),TRUE);
+      }else{
+        $response = $this->DAO->selectEntity('altaview', null, false);
+      }
+      $this->response($response,$response['status_code']);
+    }
+
 
     function alta_post(){
       if (count($this->post())>18) {
