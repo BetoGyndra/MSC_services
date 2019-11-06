@@ -67,7 +67,7 @@ class Api extends REST_Controller {
 
 
     function alta_post(){
-      if (count($this->post())>18) {
+      if (count($this->post())>19) {
         $response = array(
           "status"=>"error", 
                 "status_code"=>409, 
@@ -79,6 +79,7 @@ class Api extends REST_Controller {
                   "genre"=>"Required",
                   "birtdate"=>"Required",
                   "CURP"=>"Required",
+                  "age"=>"Required",
                   "civilStatus"=>"Required",
                   "phonePerson"=>"Required",
                   "fkAddress"=>"Required",
@@ -132,6 +133,7 @@ class Api extends REST_Controller {
           $this->form_validation->set_rules('genre','genre','required');
           $this->form_validation->set_rules('birtdate','birtdate','required');
           $this->form_validation->set_rules('CURP','CURP','required');
+          $this->form_validation->set_rules('age','age','required');
           $this->form_validation->set_rules('civilStatus','civilStatus','required');
           $this->form_validation->set_rules('phonePerson','phonePerson','required');
           $this->form_validation->set_rules('emailUser','emailUser','required');
