@@ -38,9 +38,9 @@ class Api extends REST_Controller {
                 "data"=>NULL
         );
       }else if ($id) {
-        $response = $this->DAO->selectEntity('persons',array('idPerson'=>$id),TRUE);
+        $response = $this->DAO->selectEntity('altaview',array('idPerson'=>$id),TRUE);
       }else{
-        $response = $this->DAO->selectEntity('persons', null, false);
+        $response = $this->DAO->selectEntity('altaview', null, false);
       }
       $this->response($response,$response['status_code']);
     }
@@ -128,24 +128,24 @@ class Api extends REST_Controller {
         );
       }else{
           $this->form_validation->set_data($this->post());
-          $this->form_validation->set_rules('namePerson','namePerson','required');
-          $this->form_validation->set_rules('lastnamePerson','lastnamePerson','required');
-          $this->form_validation->set_rules('genre','genre','required');
-          $this->form_validation->set_rules('birtdate','birtdate','required');
+          $this->form_validation->set_rules('namePerson','Nombre','required');
+          $this->form_validation->set_rules('lastnamePerson','Apellido','required');
+          $this->form_validation->set_rules('genre','Genero','required');
+          $this->form_validation->set_rules('birtdate','Nacimiento','required');
           $this->form_validation->set_rules('CURP','CURP','required');
-          $this->form_validation->set_rules('age','age','required');
-          $this->form_validation->set_rules('civilStatus','civilStatus','required');
-          $this->form_validation->set_rules('phonePerson','phonePerson','required');
-          $this->form_validation->set_rules('emailUser','emailUser','required');
+          $this->form_validation->set_rules('age','Edad','required');
+          $this->form_validation->set_rules('civilStatus','Estado civil','required');
+          $this->form_validation->set_rules('phonePerson','Telefono','required');
+          $this->form_validation->set_rules('emailUser','Email','required');
           $this->form_validation->set_rules('passUser','passUser','required');
-          $this->form_validation->set_rules('typeUser','typeUser','required');
-          $this->form_validation->set_rules('street','street','required');
-          $this->form_validation->set_rules('numberInt','numberInt','required');
-          $this->form_validation->set_rules('numberExt','numberExt','required');
-          $this->form_validation->set_rules('neighborhood','neighborhood','required');
-          $this->form_validation->set_rules('postalCode','postalCode','required');
-          $this->form_validation->set_rules('state','state','required');
-          $this->form_validation->set_rules('townShip','townShip','required');
+          $this->form_validation->set_rules('typeUser','Tipo Usuario','required');
+          $this->form_validation->set_rules('street','calle','required');
+          $this->form_validation->set_rules('numberInt','Numero Interior','required');
+          $this->form_validation->set_rules('numberExt','Numero Exterior','required');
+          $this->form_validation->set_rules('neighborhood','Colonia','required');
+          $this->form_validation->set_rules('postalCode','Codigo Postal','required');
+          $this->form_validation->set_rules('state','Estado','required');
+          $this->form_validation->set_rules('townShip','Municipio','required');
           if ($this->form_validation->run()==FALSE) {
             $response = array(
             "status"=>"error", 
