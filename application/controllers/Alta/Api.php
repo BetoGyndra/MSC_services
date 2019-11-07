@@ -67,7 +67,7 @@ class Api extends REST_Controller {
 
 
     function alta_post(){
-      if (count($this->post())>19) {
+      if (count($this->post())>25) {
         $response = array(
           "status"=>"error", 
                 "status_code"=>409, 
@@ -93,7 +93,10 @@ class Api extends REST_Controller {
                   "neighborhood"=>"Required",
                   "postalCode"=>"Required",
                   "state"=>"Required",
-                  "townShip"=>"Required"                          
+                  "townShip"=>"Required",
+                  "RFC"=>"Required",
+                  "tipeContract"=>"Required",
+                  "noSecure"=>"Required"                    
                 ), 
                 "data"=>NULL
         );
@@ -111,6 +114,7 @@ class Api extends REST_Controller {
                     "CURP"=>"Required",
                     "civilStatus"=>"Required",
                     "phonePerson"=>"Required",
+                    "age"=>"Required",
                     "fkAddress"=>"Required",
                     "emailUser"=>"Required",
                     "passUser"=>"Required",
@@ -122,7 +126,10 @@ class Api extends REST_Controller {
                     "neighborhood"=>"Required",
                     "postalCode"=>"Required",
                     "state"=>"Required",
-                    "townShip"=>"Required"                  
+                    "townShip"=>"Required",
+                    "RFC"=>"Required",
+                    "tipeContract"=>"Required",
+                    "noSecure"=>"Required"                   
                 ), 
                 "data"=>NULL
         );
@@ -146,6 +153,9 @@ class Api extends REST_Controller {
           $this->form_validation->set_rules('postalCode','Codigo Postal','required');
           $this->form_validation->set_rules('state','Estado','required');
           $this->form_validation->set_rules('townShip','Municipio','required');
+          $this->form_validation->set_rules('RFC','RFC','required');
+          $this->form_validation->set_rules('tipeContract','Tipo de Contrato','required');
+          $this->form_validation->set_rules('noSecure','Numero de Seguro','required');
           if ($this->form_validation->run()==FALSE) {
             $response = array(
             "status"=>"error", 
@@ -171,6 +181,7 @@ class Api extends REST_Controller {
               "lastnamePerson"=>$this->post('lastnamePerson'),
               "genre"=>$this->post('genre'),
               "birtdate"=>$this->post('birtdate'),
+              "age"=>$this->post('age'),
               "CURP"=>$this->post('CURP'),
               "civilStatus"=>$this->post('civilStatus'),
               "phonePerson"=>$this->post('phonePerson'),
@@ -182,8 +193,38 @@ class Api extends REST_Controller {
                 "passUser"=>$this->post('passUser'),
                 "typeUser"=>$this->post('typeUser'),              
                 "fkPerson"=>$responseid['data'],
-              );            
+              );                       
               $response = $this->DAO->saveOrUpdate('users',$data3);
+
+              $data4 = array(
+                "RFC"=>$this->post('RFC'),
+                "tipeContract"=>$this->post('tipeContract'),
+                "noSecure"=>$this->post('noSecure'),              
+                "fkPerson"=>$responseid['data'],
+              );                       
+              $responseid = $this->DAO->saveOrUpdate('employee',$data4); 
+
+              $tipo = $data3['typeUser'];  
+              switch($tipo){                
+                case 'Medic':
+                $data5 = array(
+                  "professionalId"=>$this->post('professionalId'),                             
+                  "fkEmployee"=>$responseid['data']
+                );
+                $responseid = $this->DAO->saveOrUpdate('medics',$data5);
+                case 'Collection':
+                $data4 = array(                                
+                  "fkEmployee"=>$responseid['data']
+                );
+               // $responseid = $this->DAO->saveOrUpdate('persons',$data2);
+                break;
+                case 'Receptionist':
+                $data4 = array(                                
+                  "fkEmployee"=>$responseid['data']
+                );
+                //$responseid = $this->DAO->saveOrUpdate('persons',$data2);
+                break;
+              }              
             }else{
             }           
           }
