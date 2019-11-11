@@ -102,7 +102,7 @@ class Api extends REST_Controller {
         $id = $this->get('id');
         $EspecialityExists = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
         if ($id && $EspecialityExists['data']) {
-          if (count($this->put())>3) {
+          if (count($this->put())>4) {
             $response = array(
               "status"=>"error", 
                     "status_code"=>409, 
@@ -143,10 +143,10 @@ class Api extends REST_Controller {
               }else{
                 $data = array(
                     "code"=>$this->put('code'),
-                    "nameSpecialty"=>$this->put('nameSpecialty'),
+                    "nameSpecialty"=>$this->put('nameSpecialty'),                    
                     "description"=>$this->put('description')
-                );
-                $response = $this->DAO->saveOrUpdate('specialties',$data);                                      
+                );                
+                $response = $this->DAO->saveOrUpdate('specialties',$data,array('idSpecialty'=>$id));                                      
               }
           }
         }else{
@@ -163,7 +163,68 @@ class Api extends REST_Controller {
                 "data"=>NULL
           );
         }
-        $this->response($response,$response['status_code']);
+        $this->response($response);
+      }
+
+      function specialitystatus_put(){
+        $id = $this->get('id');
+        $EspecialityExists = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
+        if ($id && $EspecialityExists['data']) {
+          if (count($this->put())>4) {
+            $response = array(
+              "status"=>"error", 
+                    "status_code"=>409, 
+                    "message"=>"Too Many Params Recived",
+                    "validations"=>array(
+                        "statusSpecialty"=>"Required" 
+                    ), 
+                    "data"=>NULL
+            );
+          }else if(count($this->put())==0){
+            $response = array(
+              "status"=>"error", 
+                    "status_code"=>409, 
+                    "message"=>"No Params Recived",
+                    "validations"=>array(
+                    "code"=>"Required",
+                    "nameSpecialty"=>"Required",
+                    "description"=>"Required"   
+                    ), 
+                    "data"=>NULL
+            );
+          }else{
+            $this->form_validation->set_data($this->put());          
+            $this->form_validation->set_rules('statusSpecialty','statusSpecialty','required');           
+              if ($this->form_validation->run()==FALSE) {
+                $response = array(
+                "status"=>"error", 
+                      "status_code"=>409, 
+                      "message"=>"Validations Failed",
+                      "validations"=>$this->form_validation->error_array(),
+                      "data"=>NULL
+              );
+              }else{
+                $data = array(                    
+                    "statusSpecialty"=>$this->put('statusSpecialty')                    
+                );                
+                $response = $this->DAO->saveOrUpdate('specialties',$data,array('idSpecialty'=>$id));                                      
+              }
+          }
+        }else{
+          $response = array(
+            "status"=>"error", 
+                "status_code"=>409, 
+                "message"=>"No ID Provided OR It Does't Exists",
+                "validations"=>array(
+                  "id"=>"Id Via Get",
+                  "code"=>"Required",
+                  "nameSpecialty"=>"Required",
+                  "description"=>"Required" 
+                  ), 
+                "data"=>NULL
+          );
+        }
+        $this->response($response);
       }
 
 }
