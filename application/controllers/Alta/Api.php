@@ -65,6 +65,25 @@ class Api extends REST_Controller {
       $this->response($response,$response['status_code']);
     }
 
+    function employeeV_get(){
+      
+      $id = $this->get('id');
+      if (count($this->get())>1) {
+        $response = array(
+          "status"=>"error", 
+                "status_code"=>409, 
+                "message"=>"Too Many Params Recived",
+                "validations"=>array('id'=>"Send Id To Get An person"), 
+                "data"=>NULL
+        );
+      }else if ($id) {
+        $response = $this->DAO->selectEntity('emleadoview',array('idPerson'=>$id),TRUE);
+      }else{
+        $response = $this->DAO->selectEntity('emleadoview', null, false);
+      }
+      $this->response($response,$response['status_code']);
+    }
+
 
     function alta_post(){
       if (count($this->post())>25) {
@@ -166,7 +185,7 @@ class Api extends REST_Controller {
           );
           }else{
             $data = array(
-                "street"=>$this->post('street'),
+              "street"=>$this->post('street'),
               "numberInt"=>$this->post('numberInt'),
               "numberExt"=>$this->post('numberExt'),
               "neighborhood"=>$this->post('neighborhood'),
@@ -174,8 +193,8 @@ class Api extends REST_Controller {
               "state"=>$this->post('state'),
               "townShip"=>$this->post('townShip')
             );
-            $responseId = $this->DAO->saveOrUpdate('address',$data);            
-            if($responseId){
+            $addressId = $this->DAO->saveOrUpdate('address',$data);            
+            if($addressId){
               $data2 = array(              
               "namePerson"=>$this->post('namePerson'),
               "lastnamePerson"=>$this->post('lastnamePerson'),
@@ -185,22 +204,21 @@ class Api extends REST_Controller {
               "CURP"=>$this->post('CURP'),
               "civilStatus"=>$this->post('civilStatus'),
               "phonePerson"=>$this->post('phonePerson'),
-              "fkAddress"=>$responseId['data']                
+              "fkAddress"=>$addressId['data']                
               );
-              $responseid = $this->DAO->saveOrUpdate('persons',$data2);
+              $personid = $this->DAO->saveOrUpdate('persons',$data2);
               $data3 = array(
                 "emailUser"=>$this->post('emailUser'),
                 "passUser"=>$this->post('passUser'),
                 "typeUser"=>$this->post('typeUser'),              
-                "fkPerson"=>$responseid['data'],
+                "fkPerson"=>$personid['data'],
               );                       
-              $response = $this->DAO->saveOrUpdate('users',$data3);
-
+              $response = $this->DAO->saveOrUpdate('users',$data3);             
               $data4 = array(
                 "RFC"=>$this->post('RFC'),
                 "tipeContract"=>$this->post('tipeContract'),
                 "noSecure"=>$this->post('noSecure'),              
-                "fkPerson"=>$responseid['data'],
+                "fkPerson"=>$personid['data'],
               );                       
               $responseid = $this->DAO->saveOrUpdate('employee',$data4); 
 

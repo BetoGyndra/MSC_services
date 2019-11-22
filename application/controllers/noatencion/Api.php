@@ -25,7 +25,7 @@ class Api extends REST_Controller {
   */
 
   
-    function schedule_get(){
+    function noatencion_get(){
       
       $id = $this->get('id');
       if (count($this->get())>1) {
@@ -33,53 +33,29 @@ class Api extends REST_Controller {
           "status"=>"error", 
                 "status_code"=>409, 
                 "message"=>"Too Many Params Recived",
-                "validations"=>array('id'=>"Send Id To Get A Specific Schedule"), 
+                "validations"=>array('id'=>"Send Id To Get An person"), 
                 "data"=>NULL
         );
       }else if ($id) {
-        $response = $this->DAO->selectEntity('schedule',array('idSchedule'=>$id),TRUE);
+        $response = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
       }else{
-        $response = $this->DAO->selectEntity('schedule', null, false);
-      }
-      $this->response($response,$response['status_code']);
-    }
-
-    function scheduleV_get(){
-      
-      $id = $this->get('id');
-      if (count($this->get())>1) {
-        $response = array(
-          "status"=>"error", 
-                "status_code"=>409, 
-                "message"=>"Too Many Params Recived",
-                "validations"=>array('id'=>"Send Id To Get A Specific Schedule"), 
-                "data"=>NULL
-        );
-      }else if ($id) {
-        $response = $this->DAO->selectEntity('scheduleview',array('idSchedule'=>$id),TRUE);
-      }else{
-        $response = $this->DAO->selectEntity('scheduleview', null, false);
+        $response = $this->DAO->selectEntity('specialties', null, false);
       }
       $this->response($response,$response['status_code']);
     }
 
 
-    function schedule_post(){
-      if (count($this->post())>19) {
+    function noatencion_post(){
+      if (count($this->post())>3) {
         $response = array(
           "status"=>"error", 
                 "status_code"=>409, 
                 "message"=>"Too Many Params Recived",
                 "validations"=>array(
 
-                  "lunes"=>"Required",
-                  "martes"=>"Required",
-                  "miercoles"=>"Required",
-                  "jueves"=>"Required",
-                  "viernes"=>"Required",
-                  "sabado"=>"Required",
-                  "domingo"=>"Required",
-                  "Empleado"=>"Required"
+                  "code"=>"Required",
+                  "nameSpecialty"=>"Required",
+                  "description"=>"Required"                                    
                 ), 
                 "data"=>NULL
         );
@@ -90,27 +66,17 @@ class Api extends REST_Controller {
                 "message"=>"No Params Recived",
                 "validations"=>array(
                   
-                  "lunes"=>"Required",
-                  "martes"=>"Required",
-                  "miercoles"=>"Required",
-                  "jueves"=>"Required",
-                  "viernes"=>"Required",
-                  "sabado"=>"Required",
-                  "domingo"=>"Required",
-                  "Empleado"=>"Required"                
+                  "code"=>"Required",
+                  "nameSpecialty"=>"Required",
+                  "description"=>"Required"                   
                 ), 
                 "data"=>NULL
         );
       }else{
           $this->form_validation->set_data($this->post());
-          $this->form_validation->set_rules('lunes','lunes','required');
-          $this->form_validation->set_rules('martes','martes','required');
-          $this->form_validation->set_rules('miercoles','miercoles','required');
-          $this->form_validation->set_rules('jueves','jueves','required');
-          $this->form_validation->set_rules('viernes','viernes','required');
-          $this->form_validation->set_rules('sabado','sabado','required');
-          $this->form_validation->set_rules('domingo','domingo','required');
-          $this->form_validation->set_rules('Empleado','Empleado','required');                    
+          $this->form_validation->set_rules('code','Abreviacion','required');
+          $this->form_validation->set_rules('nameSpecialty','Nombre Especialidad','required');
+          $this->form_validation->set_rules('description','Descripción','required');                 
           if ($this->form_validation->run()==FALSE) {
             $response = array(
             "status"=>"error", 
@@ -121,26 +87,21 @@ class Api extends REST_Controller {
           );
           }else{
             $data = array(
-              "lunes"=>$this->post('lunes'),
-              "martes"=>$this->post('martes'),
-              "miercoles"=>$this->post('miercoles'),
-              "jueves"=>$this->post('jueves'),
-              "viernes"=>$this->post('viernes'),
-              "sabado"=>$this->post('sabado'),
-              "domingo"=>$this->post('domingo'),
-              "fkEmployee"=>$this->post('Empleado')              
+              "code"=>$this->post('code'),
+              "nameSpecialty"=>$this->post('nameSpecialty'),
+              "description"=>$this->post('description')
             );
-            $response = $this->DAO->saveOrUpdate('schedule',$data);                                
+            $response = $this->DAO->saveOrUpdate('specialties',$data);                                
           }
       }
       $this->response($response,200);
     }
 
     
-    function schedule_put(){
+    function noatencion_put(){
         $id = $this->get('id');
-        $EscheduleExists = $this->DAO->selectEntity('schedule',array('idSchedule'=>$id),TRUE);
-        if ($id && $EscheduleExists['data']) {
+        $EnoatencionExists = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
+        if ($id && $EnoatencionExists['data']) {
           if (count($this->put())>4) {
             $response = array(
               "status"=>"error", 
@@ -185,7 +146,7 @@ class Api extends REST_Controller {
                     "nameSpecialty"=>$this->put('nameSpecialty'),                    
                     "description"=>$this->put('description')
                 );                
-                $response = $this->DAO->saveOrUpdate('schedule',$data,array('idSchedule'=>$id));                                      
+                $response = $this->DAO->saveOrUpdate('specialties',$data,array('idSpecialty'=>$id));                                      
               }
           }
         }else{
@@ -205,10 +166,10 @@ class Api extends REST_Controller {
         $this->response($response);
       }
 
-      function schedulestatus_put(){
+      function noatencionstatus_put(){
         $id = $this->get('id');
-        $EscheduleExists = $this->DAO->selectEntity('schedule',array('idSchedule'=>$id),TRUE);
-        if ($id && $EscheduleExists['data']) {
+        $EnoatencionExists = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
+        if ($id && $EnoatencionExists['data']) {
           if (count($this->put())>4) {
             $response = array(
               "status"=>"error", 
@@ -246,7 +207,7 @@ class Api extends REST_Controller {
                 $data = array(                    
                     "statusSpecialty"=>$this->put('statusSpecialty')                    
                 );                
-                $response = $this->DAO->saveOrUpdate('schedule',$data,array('idSchedule'=>$id));                                      
+                $response = $this->DAO->saveOrUpdate('specialties',$data,array('idSpecialty'=>$id));                                      
               }
           }
         }else{
