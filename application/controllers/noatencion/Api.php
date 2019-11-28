@@ -25,6 +25,25 @@ class Api extends REST_Controller {
   */
 
   
+    function noatencionV_get(){
+      
+      $id = $this->get('id');
+      if (count($this->get())>1) {
+        $response = array(
+          "status"=>"error", 
+                "status_code"=>409, 
+                "message"=>"Too Many Params Recived",
+                "validations"=>array('id'=>"Send Id To Get An person"), 
+                "data"=>NULL
+        );
+      }else if ($id) {
+        $response = $this->DAO->selectEntity('noatencionAdminview ',array('idNoAtention'=>$id),TRUE);
+      }else{
+        $response = $this->DAO->selectEntity('noatencionAdminview ', null, false);
+      }
+      $this->response($response,$response['status_code']);
+    }
+
     function noatencion_get(){
       
       $id = $this->get('id');
@@ -37,25 +56,26 @@ class Api extends REST_Controller {
                 "data"=>NULL
         );
       }else if ($id) {
-        $response = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
+        $response = $this->DAO->selectEntity('noatention',array('idNoAtention'=>$id),TRUE);
       }else{
-        $response = $this->DAO->selectEntity('specialties', null, false);
+        $response = $this->DAO->selectEntity('noatention', null, false);
       }
       $this->response($response,$response['status_code']);
     }
 
 
     function noatencion_post(){
-      if (count($this->post())>3) {
+      if (count($this->post())>4) {
         $response = array(
           "status"=>"error", 
                 "status_code"=>409, 
                 "message"=>"Too Many Params Recived",
                 "validations"=>array(
 
-                  "code"=>"Required",
                   "nameSpecialty"=>"Required",
-                  "description"=>"Required"                                    
+                  "fecha"=>"Required",
+                  "motivo"=>"Required",
+                  "desde"=>"Required"                                    
                 ), 
                 "data"=>NULL
         );
@@ -66,17 +86,19 @@ class Api extends REST_Controller {
                 "message"=>"No Params Recived",
                 "validations"=>array(
                   
-                  "code"=>"Required",
                   "nameSpecialty"=>"Required",
-                  "description"=>"Required"                   
+                  "fecha"=>"Required",
+                  "motivo"=>"Required",
+                  "desde"=>"Required"                     
                 ), 
                 "data"=>NULL
         );
       }else{
           $this->form_validation->set_data($this->post());
-          $this->form_validation->set_rules('code','Abreviacion','required');
-          $this->form_validation->set_rules('nameSpecialty','Nombre Especialidad','required');
-          $this->form_validation->set_rules('description','Descripción','required');                 
+          $this->form_validation->set_rules('nameSpecialty','nameSpecialty','required');
+          $this->form_validation->set_rules('fecha','Fecha','required');
+          $this->form_validation->set_rules('motivo','Motivo','required');
+          $this->form_validation->set_rules('desde','Hora de inicio','required');                 
           if ($this->form_validation->run()==FALSE) {
             $response = array(
             "status"=>"error", 
@@ -86,32 +108,39 @@ class Api extends REST_Controller {
                   "data"=>NULL
           );
           }else{
-            $data = array(
-              "code"=>$this->post('code'),
-              "nameSpecialty"=>$this->post('nameSpecialty'),
-              "description"=>$this->post('description')
+            $data0 = array(
+              "fecha"=>$this->post('fecha'),
+              "motivo"=>$this->post('motivo'),              
+              "desde"=>$this->post('desde')
             );
-            $response = $this->DAO->saveOrUpdate('specialties',$data);                                
+            $responseid = $this->DAO->saveOrUpdate('noatention',$data0);  
+            
+            $data1 = array(              
+              "fkSpecialties"=>$this->post('nameSpecialty'),
+              "fkNoAtention"=>$responseid['data']
+            );
+            $response = $this->DAO->saveOrUpdate('specialnoatetion',$data1); 
           }
       }
       $this->response($response,200);
     }
-
     
-    function noatencion_put(){
+      function noatencion_put(){
         $id = $this->get('id');
-        $EnoatencionExists = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
-        if ($id && $EnoatencionExists['data']) {
-          if (count($this->put())>4) {
+        $id2 = $this->get('id2');
+        $EnoatencionExists = $this->DAO->selectEntity('noatention',array('idNoAtention'=>$id),TRUE);
+        $SpecialNoAtention = $this->DAO->selectEntity('specialnoatetion',array('idSpecialNoAtention'=>$id2),TRUE);
+        if ($id and $id2 and $EnoatencionExists['data'] and $SpecialNoAtention['data']){
+          if (count($this->put())>6) {
             $response = array(
               "status"=>"error", 
                     "status_code"=>409, 
                     "message"=>"Too Many Params Recived",
                     "validations"=>array(
-                        "code"=>"Required",
-                        "nameSpecialty"=>"Required",
-                        "description"=>"Required"   
-
+                      "nameSpecialty"=>"Required",
+                      "fecha"=>"Required",
+                      "motivo"=>"Required",
+                      "desde"=>"Required"  
                     ), 
                     "data"=>NULL
             );
@@ -121,17 +150,19 @@ class Api extends REST_Controller {
                     "status_code"=>409, 
                     "message"=>"No Params Recived",
                     "validations"=>array(
-                    "code"=>"Required",
-                    "nameSpecialty"=>"Required",
-                    "description"=>"Required"   
+                      "nameSpecialty"=>"Required",
+                      "fecha"=>"Required",
+                      "motivo"=>"Required",
+                      "desde"=>"Required"     
                     ), 
                     "data"=>NULL
             );
           }else{
             $this->form_validation->set_data($this->put());          
-            $this->form_validation->set_rules('code','Abreviacion','required');
-            $this->form_validation->set_rules('nameSpecialty','Nombre Especialidad','required');
-            $this->form_validation->set_rules('description','Descripción','required');  
+            $this->form_validation->set_rules('nameSpecialty','nameSpecialty','required');
+            $this->form_validation->set_rules('fecha','Fecha','required');
+            $this->form_validation->set_rules('motivo','Motivo','required');
+            $this->form_validation->set_rules('desde','Hora de inicio','required');           
               if ($this->form_validation->run()==FALSE) {
                 $response = array(
                 "status"=>"error", 
@@ -141,12 +172,17 @@ class Api extends REST_Controller {
                       "data"=>NULL
               );
               }else{
-                $data = array(
-                    "code"=>$this->put('code'),
-                    "nameSpecialty"=>$this->put('nameSpecialty'),                    
-                    "description"=>$this->put('description')
-                );                
-                $response = $this->DAO->saveOrUpdate('specialties',$data,array('idSpecialty'=>$id));                                      
+                $data0 = array(
+                  "fecha"=>$this->put('fecha'),
+                  "motivo"=>$this->put('motivo'),              
+                  "desde"=>$this->put('desde')
+                );          
+                $response = $this->DAO->saveOrUpdate('noatention',$data0,array('idNoAtention'=>$id));
+                $data1 = array(              
+                  "fkSpecialties"=>$this->put('nameSpecialty'),                
+                );   
+              $response = $this->DAO->saveOrUpdate('specialnoatetion',$data1,array('idSpecialNoAtention'=>$id2)); 
+                           
               }
           }
         }else{
@@ -156,9 +192,11 @@ class Api extends REST_Controller {
                 "message"=>"No ID Provided OR It Does't Exists",
                 "validations"=>array(
                   "id"=>"Id Via Get",
-                  "code"=>"Required",
+                  "id2"=>"Id Via Get",
                   "nameSpecialty"=>"Required",
-                  "description"=>"Required" 
+                  "fecha"=>"Required",
+                  "motivo"=>"Required",
+                  "desde"=>"Required" 
                   ), 
                 "data"=>NULL
           );
@@ -166,17 +204,18 @@ class Api extends REST_Controller {
         $this->response($response);
       }
 
+      
       function noatencionstatus_put(){
         $id = $this->get('id');
-        $EnoatencionExists = $this->DAO->selectEntity('specialties',array('idSpecialty'=>$id),TRUE);
+        $EnoatencionExists = $this->DAO->selectEntity('noatention',array('idNoAtention'=>$id),TRUE);
         if ($id && $EnoatencionExists['data']) {
-          if (count($this->put())>4) {
+          if (count($this->put())>2) {
             $response = array(
               "status"=>"error", 
                     "status_code"=>409, 
                     "message"=>"Too Many Params Recived",
                     "validations"=>array(
-                        "statusSpecialty"=>"Required" 
+                        "statusNoAtention"=>"Required" 
                     ), 
                     "data"=>NULL
             );
@@ -186,15 +225,13 @@ class Api extends REST_Controller {
                     "status_code"=>409, 
                     "message"=>"No Params Recived",
                     "validations"=>array(
-                    "code"=>"Required",
-                    "nameSpecialty"=>"Required",
-                    "description"=>"Required"   
+                      "statusNoAtention"=>"Required" 
                     ), 
                     "data"=>NULL
             );
           }else{
             $this->form_validation->set_data($this->put());          
-            $this->form_validation->set_rules('statusSpecialty','statusSpecialty','required');           
+            $this->form_validation->set_rules('statusNoAtention','statusNoAtention','required');           
               if ($this->form_validation->run()==FALSE) {
                 $response = array(
                 "status"=>"error", 
@@ -205,9 +242,9 @@ class Api extends REST_Controller {
               );
               }else{
                 $data = array(                    
-                    "statusSpecialty"=>$this->put('statusSpecialty')                    
+                    "statusNoAtention"=>$this->put('statusNoAtention')                    
                 );                
-                $response = $this->DAO->saveOrUpdate('specialties',$data,array('idSpecialty'=>$id));                                      
+                $response = $this->DAO->saveOrUpdate('noatention',$data,array('idNoAtention'=>$id));                                      
               }
           }
         }else{
@@ -217,9 +254,7 @@ class Api extends REST_Controller {
                 "message"=>"No ID Provided OR It Does't Exists",
                 "validations"=>array(
                   "id"=>"Id Via Get",
-                  "code"=>"Required",
-                  "nameSpecialty"=>"Required",
-                  "description"=>"Required" 
+                  "statusNoAtention"=>"Required" 
                   ), 
                 "data"=>NULL
           );

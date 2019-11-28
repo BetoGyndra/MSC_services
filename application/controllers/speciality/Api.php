@@ -93,9 +93,9 @@ class Api extends REST_Controller {
             );
             $response = $this->DAO->saveOrUpdate('specialties',$data);                                
           }
+        }
+        $this->response($response,200);
       }
-      $this->response($response,200);
-    }
 
     
     function speciality_put(){
@@ -161,10 +161,10 @@ class Api extends REST_Controller {
                   "description"=>"Required" 
                   ), 
                 "data"=>NULL
-          );
-        }
-        $this->response($response);
-      }
+              );
+            }
+            $this->response($response);
+          }
 
       function specialitystatus_put(){
         $id = $this->get('id');
@@ -222,9 +222,9 @@ class Api extends REST_Controller {
                   "description"=>"Required" 
                   ), 
                 "data"=>NULL
-          );
-        }
-        $this->response($response);
-      }
+              );
+            }
+            $this->response($response);
+          }
 
 }
